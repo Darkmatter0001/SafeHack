@@ -12,45 +12,67 @@
             font-family: 'Oxygen', sans-serif;
         }
 
+        .content {
+            padding-top: 10px;
+        }
+
         #map {
             height: 600px;
             width: 800px;
-            margin-left: 10px;
         }
     </style>
 
 </head>
 
 <body>
-    <nav class="navbar navbar-default">
+    <!--<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a href="#" class="navbar-brand">Safe Route</a>
+                <a class="navbar-brand" href="#">
+
+                </a>
             </div>
         </div>
-    </nav>
+    </nav>-->
     <div class="content">
-        <div class="row">
-            <div id="map" class="col-xs-8">
 
-            </div>
-            <div id="control" class="col-xs-4">
-                <div class="row">
-                    <div class="col-xs-4">
-                        Risk Profile
+        <div class="row">
+            <div id="control" class="col-xs-4" style="margin-left:10px;">
+                <img alt="Brand" src="images/logo.png" width="100px" />
+                <div style="height:20px">
+                    &nbsp;
+                </div>
+                <form>
+                    <div class="form-group">
+                        <label for="txtForm">From</label>
+                        <input type="text" id="txtFrom" class="form-control" readonly="" value="Suite 1/154 Fullarton Rd, Rose Park SA 5067" />
                     </div>
-                    <div class="col-xs-8">
-                        <select id="riskProfile" name="Risk Profile" style="width:100%">
+
+                    <div class="form-group">
+                        <label for="txtTo">To</label>
+                        <input type="text" id="txtTo" class="form-control" readonly="" value="235 Portrush Rd, Norwood" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="riskProfile">Risk Profile</label>
+                        <select id="riskProfile" name="Risk Profile" class="form-control">
                             <option value="low">Low</option>
                             <option value="medium">Medium</option>
                             <option value="high">High</option>
                         </select>
                     </div>
 
-                </div>
-                <button id="btnStart" class="btn btn-success">Start</button>
+                    <button id="btnStart" type="button" class="btn btn-success">Start</button>
+                    <button id="btnStop" type="button" class="btn btn-danger">Stop</button>
+
+                </form>
+
 
             </div>
+            <div id="map" class="col-xs-8">
+
+            </div>
+
         </div>
     </div>
 
@@ -440,7 +462,7 @@
                 position: latlng,
                 map: map,
                 title: label,
-                icon: "/images/caricon.png",
+                icon: "images/caricon.png",
                 zIndex: Math.round(latlng.lat() * -100000) << 5
             });
 
