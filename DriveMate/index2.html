@@ -90,10 +90,7 @@
             location: { lat: -34.930632, lng: 138.636624 },
             stopover: false
             },
-            {
-                location: { lat: -34.927183, lng: 138.637483 },
-                stopover: false
-            },
+            
             {
                 location: { lat: -34.926848, lng: 138.641324 },
                 stopover: false
@@ -129,6 +126,73 @@
         ];
 
         var marker = null;
+        
+        var crashSpots = [
+        {
+            location: { lat: -34.927921, lng: 138.623437},
+            Crashes:  300
+        },
+
+
+    {
+        location: { lat: -34.927130, lng: 138.622621},
+        Crashes:  50
+    },
+
+    {
+        location: { lat: -34.92727, lng: 138.625810},
+        Crashes: 50
+    },
+
+    {
+        location: { lat: -34.927232, lng: 138.628084},
+        Crashes:  50
+    },
+
+    {
+        location: { lat: -34.926988, lng: 138.632410},
+        Crashes: 50
+    },
+
+    {
+        location: { lat: -34.927110, lng: 138.637032},
+        Crashes:  50
+    },
+
+    {
+        location: { lat: -34.9268871, lng: 138.6414078},
+        Crashes:  99
+    },
+
+    {
+        location: { lat: -34.923968, lng: 138.641226},
+        Crashes:  50
+    }];
+        function addHeatMaps()
+        {
+            
+            // -34.927898, 138.623394
+
+            for (var crashSpot in crashSpots) {
+                console.log("location : " + crashSpots[crashSpot].location);
+                console.log("adding heatmap spot");
+                // Add the circle for this city to the map.
+                var crashCircle = new google.maps.Circle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: crashSpots[crashSpot].location,
+                    radius: Math.sqrt(crashSpots[crashSpot].Crashes) * 5
+                });
+                //crashCircle.setMap(crashCircle);
+            }
+
+
+        }
+
 
         function initMap() {
 
@@ -137,6 +201,9 @@
 
             map = new google.maps.Map(document.getElementById("map"), { zoom: 14, center: { lat: -34.783671, lng: 138.606396 } });
 
+            addHeatMaps();
+
+           
             var startMarker = new google.maps.Marker({
                 position: new google.maps.LatLng(startpoint.lat, startpoint.lng),
                 map: map
@@ -149,6 +216,8 @@
 
             directionDisplay.setMap(map);
 
+            
+
             calculateAndDisplayRoute(directionService, directionDisplay, wayPointLow);
 
             document.getElementById('btnStart').addEventListener("click", function () {
@@ -157,7 +226,7 @@
                 
             })
             // Binding Dropdown
-            /*document.getElementById('riskProfile').addEventListener('change', function () {
+            document.getElementById('riskProfile').addEventListener('change', function () {
                 
                 var riskProfile = document.getElementById('riskProfile').value;
                 if (riskProfile == "high")
@@ -167,10 +236,12 @@
                 else if (riskProfile == "medium")
                 {
                     calculateAndDisplayRoute(directionService, directionDisplay, wayPointMedium);
+                    //calculateAndDisplayRoute(directionService, directionDisplay, wayPointMedium);
                 } else {
+
                     calculateAndDisplayRoute(directionService, directionDisplay, wayPointLow);
                 }
-            });*/
+            });
 
             polyline = new google.maps.Polyline({
                 path: [],
@@ -185,10 +256,11 @@
         }
 
         var steps = [];
+        var paths = [];
 
 
         function calcRoute() {
-
+            
             if (timerHandle) { clearTimeout(timerHandle); }
             //if (marker) { marker.setMap(null); }
             polyline.setMap(null);
@@ -246,6 +318,7 @@
                     // For each route, display summary information.
                     var path = response.routes[0].overview_path;
                     var legs = response.routes[0].legs;
+                    paths = [];
                     for (i = 0; i < legs.length; i++) {
                         if (i == 0) {
                             startLocation.latlng = legs[i].start_location;
@@ -256,7 +329,10 @@
                         endLocation.latlng = legs[i].end_location;
                         endLocation.address = legs[i].end_address;
                         var steps = legs[i].steps;
+
                         for (j = 0; j < steps.length; j++) {
+                            //paths.push(steps[j].path);
+                            //paths.push(steps[j].path);
                             var nextSegment = steps[j].path;
                             for (k = 0; k < nextSegment.length; k++) {
                                 polyline.getPath().push(nextSegment[k]);
@@ -343,17 +419,7 @@
             return marker;
         }
 
-        function startAnimation() {
-            eol = polyline.Distance();
-            map.setCenter(polyline.getPath().getAt(0));
-            // map.addOverlay(new google.maps.Marker(polyline.getAt(0),G_START_ICON));
-            // map.addOverlay(new GMarker(polyline.getVertex(polyline.getVertexCount()-1),G_END_ICON));
-            // marker = new google.maps.Marker({location:polyline.getPath().getAt(0)} /* ,{icon:car} */);
-            // map.addOverlay(marker);
-            poly2 = new google.maps.Polyline({ path: [polyline.getPath().getAt(0)], strokeColor: "#0000FF", strokeWeight: 10 });
-            // map.addOverlay(poly2);
-            setTimeout("animate(50)", 2000);  // Allow time for the initial map display
-        }
+       
 
         function updatePoly(d) {
             // Spawn a new polyline every 20 vertices, because updating a 100-vertex poly is too slow
@@ -372,7 +438,7 @@
             }
         }
 
-
+        var currentPathIndex = -1;
         function animate(d) {
             // alert("animate("+d+")");
             if (d > eol) {
@@ -381,13 +447,33 @@
                 return;
             }
             var p = polyline.GetPointAtDistance(d);
+            console.log("lat lang :" + p);
+            var index = 0;
+            for (var path in paths)
+            {
+                //p1 = new google.maps.Polygon({ paths: p.getAt(0).getArray() })
+                //alert(google.maps.geometry.poly.containsLocation)
+
+                if (google.maps.geometry.poly.containsLocation(p, path))
+                {
+                    currentPathIndex = index;
+                }
+
+                index += 1;
+            }
+
+            console.log("Path Index : " + currentPathIndex);
+
             map.panTo(p);
             marker.setPosition(p);
             updatePoly(d);
+
             timerHandle = setTimeout("animate(" + (d + step) + ")", tick);
         }
 
         function startAnimation() {
+
+           console.log("paths : " + paths);
             eol = polyline.Distance();
             map.setCenter(polyline.getPath().getAt(0));
 
